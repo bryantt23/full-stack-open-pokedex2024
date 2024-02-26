@@ -41,25 +41,26 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1
         if: success()
         with:
-            severity: info
-            details: Test Succeeded!
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: info
+          details: Test Succeeded!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Test Failure
         uses: rjstone/discord-webhook-notify@v1
         if: failure()
         with:
-            severity: error
-            details: Test Failed!
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: error
+          details: Test Failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Test Cancelled
         uses: rjstone/discord-webhook-notify@v1
         if: cancelled()
         with:
-            severity: warn
-            details: Test Cancelled!
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: warn
+          details: Test Cancelled!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
   deploy:
+    needs: [e2e_test]
     runs-on: ubuntu-latest
     if: >-
       github.ref == 'refs/heads/main' && 
@@ -98,4 +99,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
-          # Additional configuration here as needed
+
+  health_check:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Log Message
+        run: echo "Hitting example.com URL"
