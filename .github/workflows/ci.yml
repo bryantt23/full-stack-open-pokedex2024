@@ -60,3 +60,11 @@ jobs:
       needs: [deploy]
       runs-on: ubuntu-20.04
       steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Important for tags to be fetched as well
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
