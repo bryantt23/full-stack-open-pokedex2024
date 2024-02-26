@@ -32,6 +32,10 @@ jobs:
           command: npm run test:e2e:headless
           wait-on: http://localhost:5000
           wait-on-timeout: 30
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,3 +55,8 @@ jobs:
           deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
           curl "$deploy_url"
+
+    tag_release:
+      needs: [deploy]
+      runs-on: ubuntu-20.04
+      steps:
