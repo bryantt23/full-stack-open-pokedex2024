@@ -33,6 +33,7 @@ jobs:
           wait-on: http://localhost:5000
           wait-on-timeout: 30
       - name: Bump version and push tag
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: anothrNick/github-tag-action@1.64.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,18 +57,18 @@ jobs:
         run: |
           curl "$deploy_url"
 
-    tag_release:
-      needs: [deploy]
-      runs-on: ubuntu-20.04
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
-          with:
-            fetch-depth: 0  # Necessary for tags
-        - name: Bump version and push tag
-          uses: anothrNick/github-tag-action@1.64.0
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            DEFAULT_BUMP: patch
-            # Additional configuration here as needed
+  tag_release:
+    needs: [deploy]
+    runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Necessary for tags
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          # Additional configuration here as needed
